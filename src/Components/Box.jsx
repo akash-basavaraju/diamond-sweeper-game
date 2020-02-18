@@ -16,8 +16,7 @@ const Images = {
 const ImageProps = {
   height: "50px",
   width: "50px",
-  marginLeft: "auto",
-  marginRight: "auto"
+
 };
 
 export default class Box extends React.Component {
@@ -54,8 +53,8 @@ export default class Box extends React.Component {
     return (
       <div
         style={{
-          width: "25px",
-          height: "25px",
+          width: "50px",
+          height: "50px",
           border: "1px solid black",
           margin: "5px"
         }}
