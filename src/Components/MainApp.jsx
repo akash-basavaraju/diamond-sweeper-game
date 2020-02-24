@@ -94,7 +94,7 @@ export default class MainApp extends React.Component {
       <div style={{ padding: "10px", margin: "10px" }}>
         <div style={{ fontSize: "21px", marginBottom: "20px" }}>
           Diamond Sweeper Game
-          <div style={{ fontSize: "16px" }}>Find 8 Diamond Boxes</div>
+          <div style={{ fontSize: "16px" }}>Find 8 Diamond Boxes. Hint: You can follow the arrows.</div>
         </div>
         <div style={{ display: "flex", flexDirection: "row" }}>
           <div style={{ border: "1px solid black" }}>
