@@ -156,6 +156,19 @@ export default class MainApp extends React.Component {
             ) : null}
           </div>
         </div>
+        <div
+          style={{
+            fontSize: "12px",
+            position: "absolute",
+            bottom: "5px",
+            right: "10px"
+          }}
+          onClick={() => {
+            window.open("https://github.com/akash-basavaraju");
+          }}
+        >
+          By Akash
+        </div>
       </div>
     );
   }
