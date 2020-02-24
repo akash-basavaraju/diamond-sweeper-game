@@ -4,21 +4,31 @@ import Box from "./Box";
 export default class MainApp extends React.Component {
   constructor(props) {
     super(props);
-    this.diamondMatrix = [
-      [1, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 1, 0],
-      [0, 1, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 1, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 1, 0],
-      [0, 0, 0, 1, 0, 0, 0, 0],
-      [0, 1, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 1, 0]
-    ];
+    this.resetDiamondMatric();
+    this.state = { nearestDirection: {} };
+  }
+
+  getRandomInt() {
+    return Math.floor(Math.random() * Math.floor(7));
+  }
+
+  componentDidUpdate() {
+    const { diamondsOpened, gameOver } = this.state;
+    if (diamondsOpened === 8 && !gameOver) {
+      this.setState({ gameOver: true });
+    }
+  }
+
+  resetDiamondMatric() {
+    this.diamondMatrix = [];
+    for (let i = 0; i < 8; i++) {
+      this.diamondMatrix[i] = new Array(8).fill(0);
+      this.diamondMatrix[i][this.getRandomInt()] = 1;
+    }
     this.unOpenedDiamondMatrix = JSON.parse(JSON.stringify(this.diamondMatrix));
   }
 
   getNearestDiamondDirection = index => {
-    debugger;
     const [rowIndex, columnIndex] = index;
     const distanceToDirection = {};
     for (let i = rowIndex; i < 8; i++) {
@@ -56,30 +66,96 @@ export default class MainApp extends React.Component {
     return null;
   };
 
-  diamondOpened = index => {
+  boxOpened = (index, isDiamondPresent = false) => {
     const [rowIndex, columnIndex] = index;
-    this.unOpenedDiamondMatrix[rowIndex][columnIndex] = 0;
+    if (isDiamondPresent) {
+      this.unOpenedDiamondMatrix[rowIndex][columnIndex] = 0;
+      this.setState({ diamondsOpened: (this.state.diamondsOpened || 0) + 1 });
+    } else {
+      const direction = this.getNearestDiamondDirection(index);
+      this.setState({
+        nearestDirection: { index, direction },
+        unopenedBoxes: (this.state.unopenedBoxes || 64) - 1
+      });
+    }
   };
 
   render() {
+    const {
+      nearestDirection: {
+        index: [nRow, nColumn] = [],
+        direction: nearestDirection = ""
+      },
+      unopenedBoxes,
+      gameOver = false
+    } = this.state;
+
     return (
-      <div>
-        {this.diamondMatrix.map((row, rowIndex) => {
-          return (
-            <div style={{ display: "flex", flexDirection: "row" }}>
-              {row.map((isDiamondPresent, columnIndex) => {
-                return (
-                  <Box
-                    isDiamondPresent={isDiamondPresent}
-                    index={[rowIndex, columnIndex]}
-                    getNearestDiamondDirection={this.getNearestDiamondDirection}
-                    diamondOpened={this.diamondOpened}
-                  />
-                );
-              })}
-            </div>
-          );
-        })}
+      <div style={{ padding: "10px", margin: "10px" }}>
+        <div style={{ fontSize: "21px", marginBottom: "20px" }}>
+          Diamond Sweeper Game
+          <div style={{ fontSize: "16px" }}>Find 8 Diamond Boxes</div>
+        </div>
+        <div style={{ display: "flex", flexDirection: "row" }}>
+          <div style={{ border: "1px solid black" }}>
+            {this.diamondMatrix.map((row, rowIndex) => {
+              return (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    opacity: gameOver ? 0.5 : 1
+                  }}
+                >
+                  {row.map((isDiamondPresent, columnIndex) => {
+                    return (
+                      <Box
+                        key={`${rowIndex}-${columnIndex}`}
+                        isDiamondPresent={isDiamondPresent}
+                        index={[rowIndex, columnIndex]}
+                        nearestDirection={
+                          nRow === rowIndex && nColumn === columnIndex
+                            ? nearestDirection
+                            : undefined
+                        }
+                        boxOpened={this.boxOpened}
+                        gameOver={gameOver}
+                      />
+                    );
+                  })}
+                </div>
+              );
+            })}
+          </div>
+          <div
+            style={{
+              flex: 1,
+              padding: "10px",
+              margin: "10px",
+              display: "absolute"
+            }}
+          >
+            {gameOver ? (
+              <div
+                style={{
+                  padding: "10px",
+                  margin: "10px",
+                  border: "1px solid black"
+                }}
+              >
+                <span>Game Over. Your Score : {unopenedBoxes}</span>
+                <button
+                  style={{ marginLeft: "10px" }}
+                  onClick={() => {
+                    window.location.reload();
+                  }}
+                >
+                  RESTART GAME
+                </button>
+              </div>
+            ) : null}
+          </div>
+        </div>
       </div>
     );
   }

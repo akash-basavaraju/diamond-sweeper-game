@@ -15,8 +15,7 @@ const Images = {
 
 const ImageProps = {
   height: "50px",
-  width: "50px",
-
+  width: "50px"
 };
 
 export default class Box extends React.Component {
@@ -25,30 +24,15 @@ export default class Box extends React.Component {
     this.state = { isOpened: false };
   }
 
-  componentDidUpdate() {
-    const {
-      isDiamondPresent,
-      getNearestDiamondDirection,
-      index,
-      diamondOpened
-    } = this.props;
-    const { nearestDirection, isOpened } = this.state;
-
-    if (isOpened && isDiamondPresent) {
-      diamondOpened(index);
-    }
-
-    if (!isDiamondPresent && !nearestDirection) {
-      const diresction = getNearestDiamondDirection(index);
-      if (diresction) {
-        this.setState({ nearestDirection: diresction });
-      }
-    }
-  }
-
   render() {
-    const { isDiamondPresent } = this.props;
-    const { nearestDirection, isOpened } = this.state;
+    const {
+      index,
+      isDiamondPresent,
+      nearestDirection,
+      boxOpened,
+      gameOver
+    } = this.props;
+    const { isOpened } = this.state;
 
     return (
       <div
@@ -64,7 +48,10 @@ export default class Box extends React.Component {
             src={Images.question}
             {...ImageProps}
             onClick={() => {
-              this.setState({ isOpened: true });
+              if (!gameOver) {
+                boxOpened(index, isDiamondPresent);
+                this.setState({ isOpened: true });
+              }
             }}
           />
         ) : isDiamondPresent ? (
